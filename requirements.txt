@@ -1,0 +1,9 @@
+flask>=2.2
+gunicorn>=21
+joblib
+numpy
+pandas
+openpyxl
+reportlab
+scikit-learn>=1.0
+

@@ -1,0 +1,373 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>肉牛体况BCS智能评价系统</title>
+  <link rel="icon" href="{{ url_for('static', filename='logo.png') }}">
+
+  <style>
+    :root{
+      --bg:#eef6ff;
+      --card:#ffffff;
+      --primary:#2f7bff;
+      --primary2:#22d3a6;
+      --text:#0f172a;
+      --muted:#6b7280;
+      --danger:#ef4444;
+      --soft:#f5f9ff;
+      --border:#dbeafe;
+      --shadow: 0 12px 40px rgba(31, 80, 160, 0.12);
+      --radius: 22px;
+    }
+    *{box-sizing:border-box}
+    body{
+      margin:0;
+      font-family: -apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,
+                   "PingFang SC","Hiragino Sans GB","Microsoft YaHei",Arial,sans-serif;
+      background: radial-gradient(1200px 600px at 20% -10%, #ffffff 0%, var(--bg) 40%, #eaf4ff 100%);
+      color:var(--text);
+      min-height:100vh;
+      display:flex;
+      align-items:flex-start;
+      justify-content:center;
+      padding: 32px 14px 60px;
+    }
+    .wrap{ width: 100%; max-width: 520px; }
+    .card{
+      background:var(--card);
+      border: 1px solid rgba(219,234,254,.8);
+      box-shadow: var(--shadow);
+      border-radius: var(--radius);
+      padding: 26px 22px 18px;
+    }
+    .logo{
+      width:84px;height:84px;
+      border-radius: 50%;
+      margin: 0 auto 10px;
+      display:block;
+      object-fit:cover;
+      border: 4px solid #e6f0ff;
+      background:#fff;
+    }
+    h1{
+      margin: 6px 0 6px;
+      text-align:center;
+      font-size: 28px;
+      letter-spacing: .5px;
+      color:#1e5bff;
+      font-weight: 800;
+    }
+    .subtitle{
+      text-align:center;
+      color:var(--muted);
+      font-size: 14.5px;
+      margin-bottom: 18px;
+    }
+
+    .hint-line{
+      background: var(--soft);
+      border: 1px dashed var(--border);
+      padding: 10px 12px;
+      border-radius: 12px;
+      font-size: 12.8px;
+      color:#365278;
+      margin: 10px 0 14px;
+    }
+
+    .form-row{
+      display:grid;
+      grid-template-columns: 92px 1fr 44px;
+      gap: 10px;
+      align-items:center;
+      margin: 10px 0;
+    }
+    .label{
+      font-weight: 700;
+      color:#0b2b55;
+      display:flex;
+      align-items:center;
+      gap:6px;
+    }
+    .q{
+      display:inline-flex;
+      width:18px;height:18px;
+      align-items:center;justify-content:center;
+      border-radius: 50%;
+      background:#eef3ff;
+      color:#2f5bff;
+      font-size: 12px;
+      font-weight: 800;
+      cursor: help;
+      border:1px solid #dbeafe;
+    }
+    input[type="number"]{
+      width:100%;
+      padding: 12px 12px;
+      border-radius: 12px;
+      border: 1px solid var(--border);
+      background: #f8fbff;
+      outline: none;
+      font-size: 16px;
+      transition: .15s;
+    }
+    input[type="number"]:focus{
+      border-color:#9bc1ff;
+      box-shadow: 0 0 0 3px rgba(47,123,255,.12);
+      background:#ffffff;
+    }
+    .unit{
+      color:#93a4bd;
+      font-weight:600;
+      text-align:right;
+    }
+
+    .btns{
+      display:grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 10px;
+      margin-top: 14px;
+    }
+    button{
+      border:0;
+      padding: 12px 14px;
+      border-radius: 12px;
+      font-size: 16px;
+      font-weight: 700;
+      cursor:pointer;
+      transition:.15s;
+    }
+    .btn-primary{
+      background: linear-gradient(90deg, var(--primary), var(--primary2));
+      color:white;
+      box-shadow: 0 10px 22px rgba(47,123,255,.22);
+    }
+    .btn-primary:hover{transform: translateY(-1px)}
+    .btn-ghost{
+      background: #f3f7ff;
+      color:#0f3a7a;
+      border:1px solid #dbeafe;
+    }
+
+    .result{
+      margin-top: 14px;
+      background: #f7fbff;
+      border: 1px solid #e5f0ff;
+      border-radius: 14px;
+      padding: 14px 14px 10px;
+    }
+    .result h3{
+      margin:0 0 6px;
+      font-size: 15px;
+      color:#123a74;
+    }
+    .result .big{
+      font-size: 34px;
+      font-weight: 900;
+      color:#0f2e5a;
+      letter-spacing: 1px;
+    }
+    .result .meta{
+      color:#496685;
+      font-size: 13.5px;
+      margin-top: 4px;
+      line-height: 1.5;
+    }
+
+    .error{
+      margin-top: 12px;
+      background: #fff1f2;
+      border: 1px solid #fecdd3;
+      color:#b91c1c;
+      padding: 10px 12px;
+      border-radius: 12px;
+      font-weight: 700;
+      text-align:center;
+    }
+    .warn{
+      margin-top: 10px;
+      background: #fff7ed;
+      border: 1px solid #fed7aa;
+      color:#9a3412;
+      padding: 10px 12px;
+      border-radius: 12px;
+      font-size: 12.8px;
+    }
+
+    .links{
+      display:flex;
+      justify-content:space-between;
+      gap:10px;
+      margin-top: 10px;
+      font-size: 13px;
+    }
+    .links a{
+      color:#1e5bff;
+      text-decoration:none;
+      font-weight:600;
+    }
+
+    .footer{
+      text-align:center;
+      color:#9aa7b6;
+      font-size: 12px;
+      margin-top: 14px;
+      line-height: 1.5;
+    }
+  </style>
+</head>
+
+<body>
+  <div class="wrap">
+    <div class="card">
+      <img class="logo" src="{{ url_for('static', filename='logo.png') }}" alt="logo">
+
+      <h1>肉牛体况智能评价系统</h1>
+      <div class="subtitle">基于关键体尺指标的 BCS 智能预测原型</div>
+
+      <div class="hint-line">
+        7项中任意填写 ≥2 项即可预测
+      </div>
+
+      <form method="POST" action="/">
+        <div class="form-row">
+          <div class="label">体斜长 <span class="q" title="Body Length">?</span></div>
+          <input type="number" step="0.1" name="体斜长" placeholder="可只填两项"
+                 value="{{ inputs.get('体斜长','') }}">
+          <div class="unit">cm</div>
+        </div>
+
+        <div class="form-row">
+          <div class="label">胸围 <span class="q" title="Heart Girth">?</span></div>
+          <input type="number" step="0.1" name="胸围"
+                 value="{{ inputs.get('胸围','') }}">
+          <div class="unit">cm</div>
+        </div>
+
+        <div class="form-row">
+          <div class="label">腹围 <span class="q" title="Abdominal Girth">?</span></div>
+          <input type="number" step="0.1" name="腹围"
+                 value="{{ inputs.get('腹围','') }}">
+          <div class="unit">cm</div>
+        </div>
+
+        <div class="form-row">
+          <div class="label">腰角宽 <span class="q" title="Rump Width">?</span></div>
+          <input type="number" step="0.1" name="腰角宽"
+                 value="{{ inputs.get('腰角宽','') }}">
+          <div class="unit">cm</div>
+        </div>
+
+        <div class="form-row">
+          <div class="label">体高 <span class="q" title="Withers Height">?</span></div>
+          <input type="number" step="0.1" name="体高"
+                 value="{{ inputs.get('体高','') }}">
+          <div class="unit">cm</div>
+        </div>
+
+        <div class="form-row">
+          <div class="label">臀高 <span class="q" title="Hip Height">?</span></div>
+          <input type="number" step="0.1" name="臀高"
+                 value="{{ inputs.get('臀高','') }}">
+          <div class="unit">cm</div>
+        </div>
+
+        <div class="form-row">
+          <div class="label">体重 <span class="q" title="Body Weight">?</span></div>
+          <input type="number" step="0.1" name="体重" placeholder="kg"
+                 value="{{ inputs.get('体重','') }}">
+          <div class="unit">kg</div>
+        </div>
+
+        <div class="btns">
+          <button class="btn-primary" type="submit">一键预测</button>
+
+          <button class="btn-ghost" type="submit"
+                  formaction="{{ url_for('single_report') }}">
+            导出PDF简报
+          </button>
+
+          <button class="btn-ghost" type="button" id="demoBtn">示例数据</button>
+          <button class="btn-ghost" type="button" id="clearBtn">清空</button>
+        </div>
+      </form>
+
+      {% if error %}
+        <div class="error">{{ error }}</div>
+      {% endif %}
+
+      {% if warnings and warnings|length > 0 %}
+        <div class="warn">
+          <b>提示：</b>
+          <ul style="margin:6px 0 0 18px; padding:0;">
+            {% for w in warnings %}
+              <li>{{ w }}</li>
+            {% endfor %}
+          </ul>
+        </div>
+      {% endif %}
+
+      {% if score %}
+        <div class="result">
+          <h3>预测结果</h3>
+          <div class="big">BCS {{ score }}</div>
+          <div class="meta">
+            评分类型：{{ type_label or '' }}<br>
+            {{ tolerance_hint or '' }}<br>
+            {{ confidence_text or '' }}
+          </div>
+        </div>
+      {% endif %}
+
+      <div class="links">
+        <a href="{{ url_for('batch_page') }}">批量预测（CSV/Excel）</a>
+        <a href="javascript:void(0)" id="apiHint">JSON API：/predict</a>
+      </div>
+
+      <div class="footer">
+        国家肉牛改良中心牛体智能测评系统 © 2025<br>
+        本系统为科研原型，建议结合现场经验综合判断
+      </div>
+    </div>
+  </div>
+
+  <script>
+    const demoBtn = document.getElementById("demoBtn");
+    const clearBtn = document.getElementById("clearBtn");
+    const apiHint = document.getElementById("apiHint");
+
+    const fields = {
+      "体斜长": document.querySelector('input[name="体斜长"]'),
+      "胸围": document.querySelector('input[name="胸围"]'),
+      "腹围": document.querySelector('input[name="腹围"]'),
+      "腰角宽": document.querySelector('input[name="腰角宽"]'),
+      "体高": document.querySelector('input[name="体高"]'),
+      "臀高": document.querySelector('input[name="臀高"]'),
+      "体重": document.querySelector('input[name="体重"]'),
+    };
+
+    demoBtn.addEventListener("click", () => {
+      // 演示“只填两项也能预测”
+      fields["体斜长"].value = 130.0;
+      fields["胸围"].value = 166.0;
+
+      fields["腹围"].value = "";
+      fields["腰角宽"].value = "";
+      fields["体高"].value = "";
+      fields["臀高"].value = "";
+      fields["体重"].value = "";
+
+      window.scrollTo({top: 0, behavior: "smooth"});
+    });
+
+    clearBtn.addEventListener("click", () => {
+      Object.values(fields).forEach(i => i.value = "");
+      window.scrollTo({top: 0, behavior: "smooth"});
+    });
+
+    apiHint.addEventListener("click", () => {
+      alert("JSON API 用法示例：\nPOST /predict\nBody: {\"体斜长\":130, \"胸围\":166}");
+    });
+  </script>
+</body>
+</html>
