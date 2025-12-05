@@ -1,474 +1,373 @@
 <!DOCTYPE html>
-<html lang="zh">
+<html lang="zh-CN">
 <head>
-    <meta charset="UTF-8">
-    <title>肉牛体况智能评价系统</title>
-    <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>肉牛体况BCS智能评价系统</title>
+  <link rel="icon" href="{{ url_for('static', filename='logo.png') }}">
 
-    <!-- Favicon -->
-    <link rel="icon" href="{{ url_for('static', filename='logo.png') }}">
+  <style>
+    :root{
+      --bg:#eef6ff;
+      --card:#ffffff;
+      --primary:#2f7bff;
+      --primary2:#22d3a6;
+      --text:#0f172a;
+      --muted:#6b7280;
+      --danger:#ef4444;
+      --soft:#f5f9ff;
+      --border:#dbeafe;
+      --shadow: 0 12px 40px rgba(31, 80, 160, 0.12);
+      --radius: 22px;
+    }
+    *{box-sizing:border-box}
+    body{
+      margin:0;
+      font-family: -apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,
+                   "PingFang SC","Hiragino Sans GB","Microsoft YaHei",Arial,sans-serif;
+      background: radial-gradient(1200px 600px at 20% -10%, #ffffff 0%, var(--bg) 40%, #eaf4ff 100%);
+      color:var(--text);
+      min-height:100vh;
+      display:flex;
+      align-items:flex-start;
+      justify-content:center;
+      padding: 32px 14px 60px;
+    }
+    .wrap{ width: 100%; max-width: 520px; }
+    .card{
+      background:var(--card);
+      border: 1px solid rgba(219,234,254,.8);
+      box-shadow: var(--shadow);
+      border-radius: var(--radius);
+      padding: 26px 22px 18px;
+    }
+    .logo{
+      width:84px;height:84px;
+      border-radius: 50%;
+      margin: 0 auto 10px;
+      display:block;
+      object-fit:cover;
+      border: 4px solid #e6f0ff;
+      background:#fff;
+    }
+    h1{
+      margin: 6px 0 6px;
+      text-align:center;
+      font-size: 28px;
+      letter-spacing: .5px;
+      color:#1e5bff;
+      font-weight: 800;
+    }
+    .subtitle{
+      text-align:center;
+      color:var(--muted);
+      font-size: 14.5px;
+      margin-bottom: 18px;
+    }
 
-    <!-- PWA Manifest -->
-    <link rel="manifest" href="{{ url_for('static', filename='manifest.json') }}">
+    .hint-line{
+      background: var(--soft);
+      border: 1px dashed var(--border);
+      padding: 10px 12px;
+      border-radius: 12px;
+      font-size: 12.8px;
+      color:#365278;
+      margin: 10px 0 14px;
+    }
 
-    <!-- iOS PWA 支持 -->
-    <link rel="apple-touch-icon" href="{{ url_for('static', filename='logo.png') }}">
-    <meta name="apple-mobile-web-app-capable" content="yes">
-    <meta name="apple-mobile-web-app-status-bar-style" content="default">
-    <meta name="apple-mobile-web-app-title" content="牛体BCS">
-    <meta name="theme-color" content="#2b7cff">
+    .form-row{
+      display:grid;
+      grid-template-columns: 92px 1fr 44px;
+      gap: 10px;
+      align-items:center;
+      margin: 10px 0;
+    }
+    .label{
+      font-weight: 700;
+      color:#0b2b55;
+      display:flex;
+      align-items:center;
+      gap:6px;
+    }
+    .q{
+      display:inline-flex;
+      width:18px;height:18px;
+      align-items:center;justify-content:center;
+      border-radius: 50%;
+      background:#eef3ff;
+      color:#2f5bff;
+      font-size: 12px;
+      font-weight: 800;
+      cursor: help;
+      border:1px solid #dbeafe;
+    }
+    input[type="number"]{
+      width:100%;
+      padding: 12px 12px;
+      border-radius: 12px;
+      border: 1px solid var(--border);
+      background: #f8fbff;
+      outline: none;
+      font-size: 16px;
+      transition: .15s;
+    }
+    input[type="number"]:focus{
+      border-color:#9bc1ff;
+      box-shadow: 0 0 0 3px rgba(47,123,255,.12);
+      background:#ffffff;
+    }
+    .unit{
+      color:#93a4bd;
+      font-weight:600;
+      text-align:right;
+    }
 
-    <style>
-        :root{
-            --blue:#2b7cff;
-            --green:#20c997;
-            --ink:#2b3a4a;
-            --muted:#6b7b8c;
-            --bg1:#f3f7ff;
-            --bg2:#ecfff7;
-            --card:#ffffff;
-            --line:#cfe0ff;
+    .btns{
+      display:grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 10px;
+      margin-top: 14px;
+    }
+    button{
+      border:0;
+      padding: 12px 14px;
+      border-radius: 12px;
+      font-size: 16px;
+      font-weight: 700;
+      cursor:pointer;
+      transition:.15s;
+    }
+    .btn-primary{
+      background: linear-gradient(90deg, var(--primary), var(--primary2));
+      color:white;
+      box-shadow: 0 10px 22px rgba(47,123,255,.22);
+    }
+    .btn-primary:hover{transform: translateY(-1px)}
+    .btn-ghost{
+      background: #f3f7ff;
+      color:#0f3a7a;
+      border:1px solid #dbeafe;
+    }
 
-            --warn-bg:#fff7e6;
-            --warn-text:#8a5a00;
+    .result{
+      margin-top: 14px;
+      background: #f7fbff;
+      border: 1px solid #e5f0ff;
+      border-radius: 14px;
+      padding: 14px 14px 10px;
+    }
+    .result h3{
+      margin:0 0 6px;
+      font-size: 15px;
+      color:#123a74;
+    }
+    .result .big{
+      font-size: 34px;
+      font-weight: 900;
+      color:#0f2e5a;
+      letter-spacing: 1px;
+    }
+    .result .meta{
+      color:#496685;
+      font-size: 13.5px;
+      margin-top: 4px;
+      line-height: 1.5;
+    }
 
-            --err-bg:#ffefef;
-            --err-text:#db2c22;
-            --err-line:#ffd0d0;
-        }
+    .error{
+      margin-top: 12px;
+      background: #fff1f2;
+      border: 1px solid #fecdd3;
+      color:#b91c1c;
+      padding: 10px 12px;
+      border-radius: 12px;
+      font-weight: 700;
+      text-align:center;
+    }
+    .warn{
+      margin-top: 10px;
+      background: #fff7ed;
+      border: 1px solid #fed7aa;
+      color:#9a3412;
+      padding: 10px 12px;
+      border-radius: 12px;
+      font-size: 12.8px;
+    }
 
-        *{ box-sizing: border-box; }
+    .links{
+      display:flex;
+      justify-content:space-between;
+      gap:10px;
+      margin-top: 10px;
+      font-size: 13px;
+    }
+    .links a{
+      color:#1e5bff;
+      text-decoration:none;
+      font-weight:600;
+    }
 
-        body{
-            background: linear-gradient(135deg, var(--bg1), var(--bg2));
-            min-height: 100vh;
-            margin: 0;
-            font-family: 'HarmonyOS Sans','Microsoft YaHei', Arial, sans-serif;
-            color: var(--ink);
-        }
-
-        .wrap{
-            width: 100%;
-            display: flex;
-            justify-content: center;
-            padding: 28px 14px 40px;
-        }
-
-        .card{
-            width: 420px;
-            background: var(--card);
-            border-radius: 26px;
-            box-shadow: 0 10px 34px rgba(72,125,255,0.10);
-            padding: 34px 28px 18px;
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-        }
-
-        .logo{
-            width: 90px;
-            height: 90px;
-            border-radius: 50%;
-            object-fit: cover;
-            border: 2.5px solid #bfead6;
-            background: #f7fbff;
-            box-shadow: 0 3px 12px rgba(0,0,0,0.08);
-        }
-
-        .title{
-            font-size: 1.55rem;
-            font-weight: 800;
-            color: var(--blue);
-            letter-spacing: 2px;
-            text-align: center;
-            margin: 12px 0 6px;
-        }
-
-        .subtitle{
-            font-size: 0.92rem;
-            color: var(--muted);
-            margin: 0 0 22px;
-            text-align: center;
-        }
-
-        .form{
-            width: 100%;
-        }
-
-        .input-row{
-            display: flex;
-            align-items: center;
-            margin-bottom: 14px;
-            width: 100%;
-        }
-
-        .input-row label{
-            min-width: 86px;
-            margin-right: 10px;
-            text-align: right;
-            font-size: 1rem;
-            color: #2f4f6b;
-            font-weight: 600;
-            letter-spacing: 1px;
-        }
-
-        .hint-dot{
-            display: inline-block;
-            width: 16px;
-            height: 16px;
-            border-radius: 50%;
-            background: #eaf2ff;
-            color: #3c6fff;
-            font-size: 12px;
-            line-height: 16px;
-            text-align: center;
-            margin-left: 6px;
-            cursor: help;
-            border: 1px solid #d7e4ff;
-        }
-
-        .input-wrap{
-            position: relative;
-            flex: 1;
-        }
-
-        .input-wrap input{
-            width: 100%;
-            padding: 9px 42px 9px 12px;
-            border: 1.2px solid var(--line);
-            border-radius: 9px;
-            background: #f7fbff;
-            font-size: 1rem;
-            transition: border 0.22s, box-shadow 0.22s, background 0.22s;
-        }
-
-        .input-wrap input:focus{
-            border: 1.4px solid var(--blue);
-            outline: none;
-            background: #f2fbff;
-            box-shadow: 0 0 0 3px rgba(43,124,255,0.10);
-        }
-
-        .unit{
-            position: absolute;
-            right: 10px;
-            top: 50%;
-            transform: translateY(-50%);
-            color: #aab8c6;
-            font-size: 0.98em;
-            pointer-events: none;
-        }
-
-        .btn-row{
-            display: flex;
-            gap: 10px;
-            width: 100%;
-            margin-top: 8px;
-        }
-
-        .btn{
-            flex: 1;
-            background: linear-gradient(90deg, var(--blue) 15%, var(--green) 90%);
-            color: #fff;
-            font-size: 1.02rem;
-            padding: 10px 0;
-            border: none;
-            border-radius: 10px;
-            font-weight: 700;
-            cursor: pointer;
-            letter-spacing: 1px;
-            box-shadow: 0 3px 10px rgba(50,120,255,0.20);
-            transition: transform 0.08s ease, filter 0.2s;
-        }
-
-        .btn:hover{ filter: brightness(0.98); }
-        .btn:active{ transform: translateY(1px); }
-
-        .btn-secondary{
-            flex: 1;
-            background: #f2f6ff;
-            color: #2f4f6b;
-            border: 1px solid #d9e6ff;
-            box-shadow: none;
-            font-weight: 600;
-        }
-
-        .link-row{
-            width: 100%;
-            display: flex;
-            justify-content: space-between;
-            margin-top: 10px;
-        }
-
-        .link-row a{
-            font-size: 0.92rem;
-            color: #2b7cff;
-            text-decoration: none;
-        }
-
-        .result-block{
-            background: linear-gradient(135deg, #eef6ff, #eafff6);
-            border: 1px solid #dff0ff;
-            border-radius: 12px;
-            margin: 16px 0 4px;
-            padding: 18px 20px 12px;
-            text-align: left;
-            width: 100%;
-            font-size: 1.05rem;
-        }
-
-        .score-badge{
-            display: inline-block;
-            padding: 2px 10px;
-            border-radius: 999px;
-            background: #ffffff;
-            border: 1px solid #d9ebff;
-            color: #135bd6;
-            font-weight: 800;
-            font-size: 1.15em;
-            margin-left: 6px;
-        }
-
-        .result-label{
-            color: #0ea77b;
-            font-weight: 700;
-        }
-
-        .confidence{
-            margin-top: 6px;
-            color: #2c6a5f;
-            font-size: 0.96em;
-        }
-
-        .inputs-list{
-            color: #35526c;
-            font-size: 0.95em;
-            margin-top: 9px;
-            line-height: 1.5;
-        }
-
-        .inputs-list span{
-            margin-right: 10px;
-            display: inline-block;
-        }
-
-        .warn-msg{
-            margin: 12px 0 0;
-            color: var(--warn-text);
-            background: var(--warn-bg);
-            border: 1px dashed #ffd28a;
-            border-radius: 8px;
-            padding: 10px 12px;
-            font-size: 0.95rem;
-            width: 100%;
-        }
-
-        .error-msg{
-            margin: 14px 0 0;
-            color: var(--err-text);
-            background: var(--err-bg);
-            border-radius: 8px;
-            padding: 11px 14px;
-            font-size: 1rem;
-            text-align: center;
-            font-weight: 600;
-            width: 100%;
-            border: 1px solid var(--err-line);
-        }
-
-        .footer{
-            margin-top: 22px;
-            color: #9aa6b2;
-            font-size: 0.98em;
-            letter-spacing: 1px;
-            text-align: center;
-        }
-
-        .footer small{
-            display: block;
-            margin-top: 6px;
-            font-size: 0.88em;
-            color: #b1bcc7;
-        }
-
-        @media (max-width: 520px){
-            .card{
-                width: 94vw;
-                padding: 22px 5vw 14px;
-            }
-        }
-    </style>
+    .footer{
+      text-align:center;
+      color:#9aa7b6;
+      font-size: 12px;
+      margin-top: 14px;
+      line-height: 1.5;
+    }
+  </style>
 </head>
+
 <body>
-<div class="wrap">
+  <div class="wrap">
     <div class="card">
-        <img class="logo" src="{{ url_for('static', filename='logo.png') }}" alt="logo">
+      <img class="logo" src="{{ url_for('static', filename='logo.png') }}" alt="logo">
 
-        <div class="title">肉牛体况智能评价系统</div>
-        <div class="subtitle">基于关键体尺指标的BCS智能预测原型</div>
+      <h1>肉牛体况智能评价系统</h1>
+      <div class="subtitle">基于关键体尺指标的 BCS 智能预测原型</div>
 
-        <form class="form" method="POST" id="bcsForm" autocomplete="off">
-            <div class="input-row">
-                <label>
-                    体斜长
-                    <span class="hint-dot" title="肩端至坐骨端斜向长度">?</span>：
-                </label>
-                <div class="input-wrap">
-                    <input type="number" step="0.1" name="体斜长" value="{{ inputs.get('体斜长','') }}">
-                    <span class="unit">cm</span>
-                </div>
-            </div>
+      <div class="hint-line">
+        7项中任意填写 ≥2 项即可预测
+      </div>
 
-            <div class="input-row">
-                <label>
-                    胸围
-                    <span class="hint-dot" title="肩胛后缘胸部最大围度">?</span>：
-                </label>
-                <div class="input-wrap">
-                    <input type="number" step="0.1" name="胸围" value="{{ inputs.get('胸围','') }}">
-                    <span class="unit">cm</span>
-                </div>
-            </div>
-
-            <div class="input-row">
-                <label>
-                    腹围
-                    <span class="hint-dot" title="腹部最大围度">?</span>：
-                </label>
-                <div class="input-wrap">
-                    <input type="number" step="0.1" name="腹围" value="{{ inputs.get('腹围','') }}">
-                    <span class="unit">cm</span>
-                </div>
-            </div>
-
-            <div class="input-row">
-                <label>
-                    腰角宽
-                    <span class="hint-dot" title="髋部/腰角区域最大宽度">?</span>：
-                </label>
-                <div class="input-wrap">
-                    <input type="number" step="0.1" name="腰角宽" value="{{ inputs.get('腰角宽','') }}">
-                    <span class="unit">cm</span>
-                </div>
-            </div>
-
-            <div class="input-row">
-                <label>
-                    体高
-                    <span class="hint-dot" title="鬐甲最高点至地面垂直高度">?</span>：
-                </label>
-                <div class="input-wrap">
-                    <input type="number" step="0.1" name="体高" value="{{ inputs.get('体高','') }}">
-                    <span class="unit">cm</span>
-                </div>
-            </div>
-
-            <!-- 主要操作 -->
-            <div class="btn-row">
-                <button type="submit" class="btn">一键预测</button>
-                <!-- 直接复用当前表单数据导出PDF -->
-                <button type="submit"
-                        class="btn btn-secondary"
-                        formaction="{{ url_for('single_report') }}">
-                    导出PDF简报
-                </button>
-            </div>
-
-            <!-- 辅助操作 -->
-            <div class="btn-row" style="margin-top:8px;">
-                <button type="button" class="btn btn-secondary" id="fillDemo">示例数据</button>
-                <button type="button" class="btn btn-secondary" id="clearAll">清空</button>
-            </div>
-        </form>
-
-        <div class="link-row">
-            <a href="{{ url_for('batch_page') }}">批量预测（CSV/Excel）</a>
-            <a href="javascript:void(0)" title="供系统对接或移动端调用">
-                JSON API：/predict
-            </a>
+      <form method="POST" action="/">
+        <div class="form-row">
+          <div class="label">体斜长 <span class="q" title="Body Length">?</span></div>
+          <input type="number" step="0.1" name="体斜长" placeholder="可只填两项"
+                 value="{{ inputs.get('体斜长','') }}">
+          <div class="unit">cm</div>
         </div>
 
-        <!-- 警示 -->
-        {% if warnings and warnings|length > 0 %}
-        <div class="warn-msg">
-            <div style="font-weight:700;margin-bottom:4px;">提示：</div>
-            <ul style="margin:0;padding-left:18px;">
-                {% for w in warnings %}
-                <li>{{ w }}</li>
-                {% endfor %}
-            </ul>
+        <div class="form-row">
+          <div class="label">胸围 <span class="q" title="Heart Girth">?</span></div>
+          <input type="number" step="0.1" name="胸围"
+                 value="{{ inputs.get('胸围','') }}">
+          <div class="unit">cm</div>
         </div>
-        {% endif %}
 
-        <!-- 结果 -->
-        {% if score %}
-        <div class="result-block">
-            <div>
-                <strong>体况评分：</strong>
-                <span class="score-badge">{{ score }}</span>
-            </div>
-
-            <div style="margin-top:6px;">
-                评分类型：<span class="result-label">{{ type_label }}</span>
-            </div>
-
-            <div style="margin-top:4px;color:#1f6a60;">
-                {{ tolerance_hint }}
-            </div>
-
-            {% if confidence_text %}
-            <div class="confidence">{{ confidence_text }}</div>
-            {% endif %}
-
-            <div class="inputs-list">
-                <span>体斜长: {{ inputs['体斜长'] }}cm</span>
-                <span>胸围: {{ inputs['胸围'] }}cm</span>
-                <span>腹围: {{ inputs['腹围'] }}cm</span>
-                <span>腰角宽: {{ inputs['腰角宽'] }}cm</span>
-                <span>体高: {{ inputs['体高'] }}cm</span>
-            </div>
+        <div class="form-row">
+          <div class="label">腹围 <span class="q" title="Abdominal Girth">?</span></div>
+          <input type="number" step="0.1" name="腹围"
+                 value="{{ inputs.get('腹围','') }}">
+          <div class="unit">cm</div>
         </div>
-        {% endif %}
 
-        <!-- 错误 -->
-        {% if error %}
-        <div class="error-msg">{{ error }}</div>
-        {% endif %}
-
-        <div class="footer">
-            国家肉牛改良中心牛体智能测评系统 © 2025
-            <small>本系统为科研原型，建议结合现场经验综合判断</small>
+        <div class="form-row">
+          <div class="label">腰角宽 <span class="q" title="Rump Width">?</span></div>
+          <input type="number" step="0.1" name="腰角宽"
+                 value="{{ inputs.get('腰角宽','') }}">
+          <div class="unit">cm</div>
         </div>
+
+        <div class="form-row">
+          <div class="label">体高 <span class="q" title="Withers Height">?</span></div>
+          <input type="number" step="0.1" name="体高"
+                 value="{{ inputs.get('体高','') }}">
+          <div class="unit">cm</div>
+        </div>
+
+        <div class="form-row">
+          <div class="label">臀高 <span class="q" title="Hip Height">?</span></div>
+          <input type="number" step="0.1" name="臀高"
+                 value="{{ inputs.get('臀高','') }}">
+          <div class="unit">cm</div>
+        </div>
+
+        <div class="form-row">
+          <div class="label">体重 <span class="q" title="Body Weight">?</span></div>
+          <input type="number" step="0.1" name="体重" placeholder="kg"
+                 value="{{ inputs.get('体重','') }}">
+          <div class="unit">kg</div>
+        </div>
+
+        <div class="btns">
+          <button class="btn-primary" type="submit">一键预测</button>
+
+          <button class="btn-ghost" type="submit"
+                  formaction="{{ url_for('single_report') }}">
+            导出PDF简报
+          </button>
+
+          <button class="btn-ghost" type="button" id="demoBtn">示例数据</button>
+          <button class="btn-ghost" type="button" id="clearBtn">清空</button>
+        </div>
+      </form>
+
+      {% if error %}
+        <div class="error">{{ error }}</div>
+      {% endif %}
+
+      {% if warnings and warnings|length > 0 %}
+        <div class="warn">
+          <b>提示：</b>
+          <ul style="margin:6px 0 0 18px; padding:0;">
+            {% for w in warnings %}
+              <li>{{ w }}</li>
+            {% endfor %}
+          </ul>
+        </div>
+      {% endif %}
+
+      {% if score %}
+        <div class="result">
+          <h3>预测结果</h3>
+          <div class="big">BCS {{ score }}</div>
+          <div class="meta">
+            评分类型：{{ type_label or '' }}<br>
+            {{ tolerance_hint or '' }}<br>
+            {{ confidence_text or '' }}
+          </div>
+        </div>
+      {% endif %}
+
+      <div class="links">
+        <a href="{{ url_for('batch_page') }}">批量预测（CSV/Excel）</a>
+        <a href="javascript:void(0)" id="apiHint">JSON API：/predict</a>
+      </div>
+
+      <div class="footer">
+        国家肉牛改良中心牛体智能测评系统 © 2025<br>
+        本系统为科研原型，建议结合现场经验综合判断
+      </div>
     </div>
-</div>
+  </div>
 
-<script>
-    // 示例数据（你可按训练集均值调整）
-    const demo = {
-        "体斜长": 145.0,
-        "胸围": 180.0,
-        "腹围": 200.0,
-        "腰角宽": 45.0,
-        "体高": 125.0
+  <script>
+    const demoBtn = document.getElementById("demoBtn");
+    const clearBtn = document.getElementById("clearBtn");
+    const apiHint = document.getElementById("apiHint");
+
+    const fields = {
+      "体斜长": document.querySelector('input[name="体斜长"]'),
+      "胸围": document.querySelector('input[name="胸围"]'),
+      "腹围": document.querySelector('input[name="腹围"]'),
+      "腰角宽": document.querySelector('input[name="腰角宽"]'),
+      "体高": document.querySelector('input[name="体高"]'),
+      "臀高": document.querySelector('input[name="臀高"]'),
+      "体重": document.querySelector('input[name="体重"]'),
     };
 
-    document.getElementById("fillDemo").addEventListener("click", () => {
-        for (const [k, v] of Object.entries(demo)) {
-            const el = document.querySelector(`input[name="${k}"]`);
-            if (el) el.value = v;
-        }
+    demoBtn.addEventListener("click", () => {
+      // 演示“只填两项也能预测”
+      fields["体斜长"].value = 130.0;
+      fields["胸围"].value = 166.0;
+
+      fields["腹围"].value = "";
+      fields["腰角宽"].value = "";
+      fields["体高"].value = "";
+      fields["臀高"].value = "";
+      fields["体重"].value = "";
+
+      window.scrollTo({top: 0, behavior: "smooth"});
     });
 
-    document.getElementById("clearAll").addEventListener("click", () => {
-        document.getElementById("bcsForm").reset();
+    clearBtn.addEventListener("click", () => {
+      Object.values(fields).forEach(i => i.value = "");
+      window.scrollTo({top: 0, behavior: "smooth"});
     });
 
-    // PWA: 注册 Service Worker
-    if ("serviceWorker" in navigator) {
-        window.addEventListener("load", () => {
-            navigator.serviceWorker.register("{{ url_for('static', filename='sw.js') }}");
-        });
-    }
-</script>
+    apiHint.addEventListener("click", () => {
+      alert("JSON API 用法示例：\nPOST /predict\nBody: {\"体斜长\":130, \"胸围\":166}");
+    });
+  </script>
 </body>
 </html>
