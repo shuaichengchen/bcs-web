@@ -1,0 +1,66 @@
+<!DOCTYPE html>
+<html lang="zh">
+<head>
+    <meta charset="UTF-8">
+    <title>批量BCS预测 - 肉牛体况智能评价系统</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <link rel="icon" href="{{ url_for('static', filename='logo.png') }}">
+    <style>
+        :root{
+            --blue:#2b7cff; --green:#20c997; --ink:#2b3a4a; --muted:#6b7b8c;
+            --bg1:#f3f7ff; --bg2:#ecfff7; --card:#ffffff; --line:#cfe0ff;
+        }
+        body{background:linear-gradient(135deg,var(--bg1),var(--bg2));min-height:100vh;margin:0;
+            font-family:'HarmonyOS Sans','Microsoft YaHei',Arial,sans-serif;color:var(--ink);}
+        .card{width:520px;margin:36px auto 22px;background:var(--card);border-radius:22px;
+            box-shadow:0 10px 34px rgba(72,125,255,.10);padding:28px 28px 22px;}
+        .head{display:flex;align-items:center;gap:14px;margin-bottom:16px;}
+        .logo{width:46px;height:46px;border-radius:50%;border:2px solid #cfeadf;background:#fff;object-fit:cover;}
+        h1{font-size:1.35rem;margin:0;color:var(--blue);letter-spacing:1px;}
+        .muted{color:var(--muted);font-size:.95rem;margin-bottom:14px;}
+        .box{border:1.2px dashed #d7e6ff;background:#f8fbff;border-radius:12px;padding:16px 18px;margin-bottom:14px;}
+        .cols{display:flex;flex-wrap:wrap;gap:8px;margin-top:6px;font-size:.95rem;}
+        .pill{background:#fff;border:1px solid var(--line);padding:2px 8px;border-radius:999px;}
+        .btn{background:linear-gradient(90deg,var(--blue) 15%,var(--green) 90%);color:#fff;font-size:1.02rem;padding:10px 22px;border:none;
+            border-radius:10px;font-weight:700;cursor:pointer;letter-spacing:1px;box-shadow:0 3px 10px rgba(50,120,255,.20);}
+        .btn-secondary{background:#f2f6ff;color:#2f4f6b;border:1px solid #d9e6ff;box-shadow:none;font-weight:600;text-decoration:none;
+            display:inline-block;padding:9px 16px;border-radius:10px;font-size:.98rem;}
+        .row{display:flex;gap:10px;align-items:center;margin-top:10px;}
+        .error{background:#ffefef;border:1px solid #ffd0d0;color:#db2c22;border-radius:8px;padding:10px 12px;font-weight:600;margin-top:10px;}
+        @media (max-width:620px){.card{width:92vw;padding:22px 4vw;}}
+    </style>
+</head>
+<body>
+<div class="card">
+    <div class="head">
+        <img class="logo" src="{{ url_for('static', filename='logo.png') }}" alt="logo">
+        <div>
+            <h1>批量BCS预测</h1>
+            <div class="muted">上传CSV或Excel，系统将返回带预测结果的新文件</div>
+        </div>
+    </div>
+
+    <div class="box">
+        <div><strong>文件要求</strong></div>
+        <div class="muted" style="margin-top:6px;">表头必须包含以下5列（单位：cm）：</div>
+        <div class="cols">
+            <span class="pill">体斜长</span><span class="pill">胸围</span><span class="pill">腹围</span>
+            <span class="pill">腰角宽</span><span class="pill">体高</span>
+        </div>
+        <div class="muted" style="margin-top:10px;">
+            系统自动计算“胸围/体高”，输出：预测BCS、评分类型、容错范围、置信度与备注。
+        </div>
+    </div>
+
+    <form method="POST" action="{{ url_for('batch_predict') }}" enctype="multipart/form-data">
+        <input type="file" name="file" accept=".csv,.xlsx,.xls" required>
+        <div class="row">
+            <button class="btn" type="submit">开始批量预测</button>
+            <a class="btn-secondary" href="{{ url_for('index') }}">返回单牛预测</a>
+        </div>
+    </form>
+
+    {% if error %}<div class="error">{{ error }}</div>{% endif %}
+</div>
+</body>
+</html>
