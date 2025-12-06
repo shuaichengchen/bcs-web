@@ -267,11 +267,18 @@ def export_pdf():
     result, error = predict_value(inputs)
     warnings = make_warnings(inputs)
 
-    pdfmetrics.registerFont(UnicodeCIDFont("HeiseiMin-W3"))
+    # 1. 修改：注册内置中文字体 STSong-Light
+    pdfmetrics.registerFont(UnicodeCIDFont("STSong-Light"))
 
     buffer = BytesIO()
     doc = SimpleDocTemplate(buffer, pagesize=A4)
+    
+    # 2. 修改：配置样式以使用中文字体
     styles = getSampleStyleSheet()
+    styles['Normal'].fontName = 'STSong-Light'  # 正文
+    styles['Title'].fontName = 'STSong-Light'   # 标题
+    styles['Heading3'].fontName = 'STSong-Light' # 小标题（用于Warning）
+
     story = []
 
     logo_path = BASE_DIR / "static" / "logo.png"
@@ -299,8 +306,10 @@ def export_pdf():
         rows.append(["错误", error])
 
     table = Table(rows, colWidths=[120, 200])
+    
+    # 3. 修改：表格样式中使用 STSong-Light
     table.setStyle(TableStyle([
-        ("FONT", (0,0), (-1,-1), "HeiseiMin-W3"),
+        ("FONT", (0,0), (-1,-1), "STSong-Light"),
         ("BACKGROUND", (0,0), (-1,0), colors.lightgrey),
         ("BOX", (0,0), (-1,-1), 1, colors.black),
         ("INNERGRID", (0,0), (-1,-1), 0.5, colors.black),
